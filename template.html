@@ -41,15 +41,20 @@
     </nav>
 
     <div class="container">
-      <p>My bookmarks:</p>
       <ul>
       {{#bookmarks}}
         <li>
-          <a href="{{ url }}">{{ title }}</a>
+          <a href="{{ url }}" class="title">{{ title }}</a>
 
           {{#description?}}
           <p>{{ description }}</p>
           {{/description?}}
+
+          <p class="tags">
+          {{#tags}}
+          <a href="/tag/{{ . }}">{{ . }}</a>
+          {{/tags}}
+          </p>
         </li>
       {{/bookmarks}}
       </ul>

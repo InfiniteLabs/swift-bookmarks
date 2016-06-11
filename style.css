@@ -1,0 +1,43 @@
+.navbar-brand {
+    font-weight: bold;
+}
+
+ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+ul li {
+    margin-bottom: 25px;
+}
+
+.title {
+    font-weight: bold;
+    color: #D94C1C;
+}
+
+.tags a {
+    color: #999;
+    font-size: 85%;
+}
+
+.tags a:hover {
+    color: #666;
+}
+
+.navbar-default {
+    background-color: #D94C1C;
+    border: none;
+    border-radius: none;
+    color: white;
+}
+
+.navbar-default a,
+.navbar-default .navbar-brand,
+.navbar-default .navbar-brand:hover {
+    color: white;
+}
+
+body {
+    font-size: 150%;
+}
