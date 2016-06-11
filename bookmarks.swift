@@ -15,10 +15,22 @@ let bookmarks = [
 
 // Given the HTML body for a page, add the <html> and <head> content.
 func HTMLfromBody(bodyString: String) -> String {
-    var htmlString = "<html><body>"
-    htmlString += bodyString
-    htmlString += "</body></html>"
-    return htmlString
+    let htmlComponents = [
+        "<!DOCTYPE html>",
+        "<html lang=\"en\">",
+        "<head>",
+
+        // Mobile resizing magic
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">",
+
+        // Link to Bootstrap stylesheet
+        "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css\">",
+
+        "</head>",
+        "<body><div class=\"container\">\(bodyString)</div></body>",
+        "</html>",
+    ]
+    return htmlComponents.joinWithSeparator("")
 }
 
 
