@@ -128,6 +128,13 @@ server.get("/") { req, res in
     return .Send
 }
 
+server.get("/style.css") { req, res in
+    res.bodyString = try! String(contentsOfURL: NSURL(fileURLWithPath: "style.css"),
+                                 encoding: NSUTF8StringEncoding)
+    res.headers["Content-Type"] = "text/css"
+    return .Send
+}
+
 
 let port = 8080
 do {
