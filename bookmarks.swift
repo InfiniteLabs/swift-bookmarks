@@ -4,29 +4,100 @@
 // Created by Alex Chan on 11 June 2016
 //
 
+import Foundation
+
 import Mustache
 import Taylor
+
+let PLISTPATH = "./bookmarks.plist"
+
+
+func getBookmarks() -> [Bookmark] {
+    if let retval = NSArray(contentsOfFile: PLISTPATH) {
+        return retval.map { dictToBookmark($0 as! NSDictionary) }
+    } else {
+        return [Bookmark]()
+    }
+}
+
+
+func setBookmarks(data: [Bookmark]) {
+    let array = NSArray(array: data.map {$0.encode()})
+    array.writeToFile(PLISTPATH, atomically: true)
+}
 
 
 struct Bookmark {
     var url: String
     var title: String
+    var description: String?
+    var date_added: NSDate
+    var tags: [String]?
 
     func encode() -> NSDictionary {
         let metadata = NSMutableDictionary()
 
         metadata.setObject(self.url, forKey: "url")
         metadata.setObject(self.title, forKey: "title")
+        metadata.setObject(self.date_added, forKey: "date_added")
+
+        // Only add the optional fields if they are non-nil.
+        if let description = self.description {
+            metadata.setObject(description, forKey: "description")
+        }
+        if let tags = self.tags {
+            metadata.setObject(tags, forKey: "tags")
+        }
 
         return metadata
     }
 }
 
 
-let bookmarks = [
-    Bookmark(url: "https://github.com", title: "GitHub"),
-    Bookmark(url: "https://twitter.com", title: "Twitter"),
-]
+// Yes, this is horrible and repetitive.  It helps deserialise the
+// obejcts that come out of the plist file.
+func dictToBookmark(dict: NSDictionary) -> Bookmark {
+    let url: String
+    let title: String
+    let date_added: NSDate
+    let tags: [String]?
+    let description: String?
+
+    if let new_url = dict["url"] {
+        url = String(new_url)
+    } else {
+        print("Missing URL on \(dict); exiting.")
+        exit(1)
+    }
+
+    if let new_title = dict["title"] {
+        title = String(new_title)
+    } else {
+        print("Missing title on \(dict); exiting.")
+        exit(1)
+    }
+
+    if let new_date = dict["date_added"] {
+        date_added = (new_date as! NSDate)
+    } else {
+        date_added = NSDate()
+    }
+
+    if let new_tags = dict["tags"] {
+        tags = (new_tags as? [String])
+    } else {
+        tags = nil
+    }
+
+    if let new_description = dict["description"] {
+        description = (new_description as! String)
+    } else {
+        description = nil
+    }
+
+    return Bookmark(url: url, title: title, description: description,
+                    date_added: date_added, tags: tags)
+}
 
 
 // Given a list of bookmarks, return the HTML required to render
@@ -52,7 +123,7 @@ func HTMLforListOfBookmarks(bookmarks: [Bookmark]) -> String {
 let server = Taylor.Server()
 
 server.get("/") { req, res in
-    res.bodyString = HTMLforListOfBookmarks(bookmarks)
+    res.bodyString = HTMLforListOfBookmarks(getBookmarks())
     res.headers["Content-Type"] = "text/html"
     return .Send
 }
