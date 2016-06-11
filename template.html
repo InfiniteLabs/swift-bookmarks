@@ -11,7 +11,12 @@
   </head>
   <body>
     <div class="container">
-      {{{ bodyString }}}
+      <p>My bookmarks:</p>
+      <ul>
+      {{#bookmarks}}
+        <li><a href="{{ url }}">{{ title }}</a></li>
+      {{/bookmarks}}
+      </ul>
     </div>
   </body>
 </html>
