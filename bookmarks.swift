@@ -84,7 +84,7 @@ func dictToBookmark(dict: NSDictionary) -> Bookmark {
     }
 
     if let new_tags = dict["tags"] {
-        tags = (new_tags as? [String])
+        tags = (new_tags as? [String])!.sort()
     } else {
         tags = nil
     }
