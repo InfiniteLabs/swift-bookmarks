@@ -102,9 +102,10 @@ func dictToBookmark(dict: NSDictionary) -> Bookmark {
 
 // Given a list of bookmarks, return the HTML required to render
 // them as a list.
-func HTMLforListOfBookmarks(bookmarks: [Bookmark]) -> String {
+func HTMLforListOfBookmarks(bookmarks: [Bookmark], title: String) -> String {
     let data = [
         "bookmarks": bookmarks.map {$0.encode()},
+        "title": title,
     ]
 
     do {
@@ -123,7 +124,10 @@ func HTMLforListOfBookmarks(bookmarks: [Bookmark]) -> String {
 let server = Taylor.Server()
 
 server.get("/") { req, res in
-    res.bodyString = HTMLforListOfBookmarks(getBookmarks())
+    res.bodyString = HTMLforListOfBookmarks(getBookmarks(), title: "")
+    res.headers["Content-Type"] = "text/html"
+    return .Send
+}
     res.headers["Content-Type"] = "text/html"
     return .Send
 }

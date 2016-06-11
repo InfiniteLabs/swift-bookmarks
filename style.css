@@ -1,7 +1,3 @@
-.navbar-brand {
-    font-weight: bold;
-}
-
 ul {
     list-style: none;
     padding-left: 0;
@@ -41,4 +37,19 @@ ul li {
 
 body {
     font-size: 150%;
+}
+
+/* Toggle element on mobile screens */
+.navbar-toggle {
+    background-color: white;
+    border-color: #8c3112;
+}
+
+.container {
+    max-width: 750px;
+}
+
+.navbar-form,
+.navbar-default .navbar-form {
+    border: none;
 }
