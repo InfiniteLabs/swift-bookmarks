@@ -8,17 +8,32 @@ import Mustache
 import Taylor
 
 
+struct Bookmark {
+    var url: String
+    var title: String
+
+    func encode() -> NSDictionary {
+        let metadata = NSMutableDictionary()
+
+        metadata.setObject(self.url, forKey: "url")
+        metadata.setObject(self.title, forKey: "title")
+
+        return metadata
+    }
+}
+
+
 let bookmarks = [
-    ["url": "https://github.com", "title": "GitHub"],
-    ["url": "https://twitter.com", "title": "Twitter"],
+    Bookmark(url: "https://github.com", title: "GitHub"),
+    Bookmark(url: "https://twitter.com", title: "Twitter"),
 ]
 
 
 // Given a list of bookmarks, return the HTML required to render
 // them as a list.
-func HTMLforListOfBookmarks(bookmarks: [[String: String]]) -> String {
+func HTMLforListOfBookmarks(bookmarks: [Bookmark]) -> String {
     let data = [
-        "bookmarks": bookmarks,
+        "bookmarks": bookmarks.map {$0.encode()},
     ]
 
     do {
