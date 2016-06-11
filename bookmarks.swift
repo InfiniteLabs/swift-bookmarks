@@ -1,3 +1,4 @@
+import Mustache
 import Taylor
 
 
@@ -15,22 +16,16 @@ let bookmarks = [
 
 // Given the HTML body for a page, add the <html> and <head> content.
 func HTMLfromBody(bodyString: String) -> String {
-    let htmlComponents = [
-        "<!DOCTYPE html>",
-        "<html lang=\"en\">",
-        "<head>",
-
-        // Mobile resizing magic
-        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">",
-
-        // Link to Bootstrap stylesheet
-        "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css\">",
-
-        "</head>",
-        "<body><div class=\"container\">\(bodyString)</div></body>",
-        "</html>",
-    ]
-    return htmlComponents.joinWithSeparator("")
+    do {
+        let template = try Template(path: "./template.html")
+        return try template.render(Box(["bodyString": bodyString]))
+    } catch {
+        // This isn't great error handling -- we should really send
+        // an error 500 status code.  Also, this error message is
+        // unhelpfully generic.  Improve this!
+        print("Error rendering the page.")
+        return "Server error."
+    }
 }
 
 
