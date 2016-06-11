@@ -13,17 +13,31 @@ let bookmarks = [
 ]
 
 
-let server = Taylor.Server()
+// Given the HTML body for a page, add the <html> and <head> content.
+func HTMLfromBody(bodyString: String) -> String {
+    var htmlString = "<html><body>"
+    htmlString += bodyString
+    htmlString += "</body></html>"
+    return htmlString
+}
 
-server.get("/") { req, res in
 
-    var bodyString = "<html><body><p>My bookmarks:</p><ul>"
+// Given an array of Bookmarks, return the HTML required to list those
+// bookmarks on the page.
+func indexPage(bookmarks: [Bookmark]) -> String {
+    var bodyString = "<p>My bookmarks:</p><ul>"
     for bookmark in bookmarks {
         bodyString += "<li><a href=\"\(bookmark.url)\">\(bookmark.title)</li>"
     }
-    bodyString += "</ul></html>"
+    bodyString += "</ul>"
+    return HTMLfromBody(bodyString)
+}
 
-    res.bodyString = bodyString
+
+let server = Taylor.Server()
+
+server.get("/") { req, res in
+    res.bodyString = indexPage(bookmarks)
     res.headers["Content-Type"] = "text/html"
     return .Send
 }
