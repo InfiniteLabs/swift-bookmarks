@@ -33,6 +33,11 @@ func setBookmarks(data: [Bookmark]) {
 }
 
 
+func bookmarksByTag(tag: String) -> [Bookmark] {
+    return getBookmarks().filter {$0.tags != nil && $0.tags!.contains(tag)}
+}
+
+
 struct Bookmark {
     var uuid: String
     var url: String
@@ -171,8 +176,12 @@ server.get("/") { req, res, cb in
     return cb(.Send(req, res))
 }
 
-server.get("/add") { req, res, cb in
-    res.bodyString = HTMLFormForNewBookmark()
+server.get("/tag/:name") { req, res, cb in
+    let tag = req.parameters["name"]!
+    res.bodyString = HTMLforListOfBookmarks(
+        bookmarksByTag(tag),
+        title: "Tagged with &ldquo;\(tag)&rdquo;"
+    )
     res.headers["Content-Type"] = "text/html"
     return cb(.Send(req, res))
 }
