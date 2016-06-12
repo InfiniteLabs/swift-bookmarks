@@ -1,3 +1,4 @@
 # Don't check in source code from Carthage dependencies
 Carthage
 Cartfile.resolved
+bookmarks.plist
