@@ -25,7 +25,31 @@
           alert("Bookmarks must have a URL.");
           return false;
         }
+
+        // Check that all the fields are ASCII only.  This is to work around
+        // a server-side limitation that causes it to crash if it gets
+        // non-ASCII data in POST requests (yeah, it's rubbish).
+        if (!isASCII(title)) {
+          alert("Bookmark title must be ASCII only.")
+          return false;
+        }
+        if (!isASCII(url)) {
+          alert("Bookmark URL must be ASCII only.")
+          return false;
+        }
+        if (!isASCII(document.getElementById("swiftmarksDescription").value)) {
+          alert("Bookmark description must be ASCII only.")
+          return false;
+        }
+        if (!isASCII(document.getElementById("swiftmarksTags").value)) {
+          alert("Bookmark tags must be ASCII only.")
+          return false;
+        }
+
         return true;
+      }
+      function isASCII(str) {
+          return /^[\x00-\x7F]*$/.test(str);
       }
     </script>
 
