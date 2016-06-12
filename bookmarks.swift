@@ -34,6 +34,7 @@ func setBookmarks(data: [Bookmark]) {
 
 
 struct Bookmark {
+    var uuid: String
     var url: String
     var title: String
     var description: String?
@@ -43,6 +44,7 @@ struct Bookmark {
     func encode() -> NSDictionary {
         let metadata = NSMutableDictionary()
 
+        metadata.setObject(self.uuid, forKey: "uuid")
         metadata.setObject(self.url, forKey: "url")
         metadata.setObject(self.title, forKey: "title")
         metadata.setObject(self.date_added, forKey: "date_added")
@@ -71,6 +73,7 @@ struct Bookmark {
 // Yes, this is horrible and repetitive.  It helps deserialise the
 // obejcts that come out of the plist file.
 func dictToBookmark(dict: NSDictionary) -> Bookmark {
+    let uuid: String
     let url: String
     let title: String
     let date_added: NSDate
@@ -97,6 +100,12 @@ func dictToBookmark(dict: NSDictionary) -> Bookmark {
         date_added = NSDate()
     }
 
+    if let new_uuid = dict["uuid"] {
+        uuid = String(new_uuid)
+    } else {
+        uuid = NSUUID().UUIDString
+    }
+
     if let new_tags = dict["tags"] {
         tags = (new_tags as? [String])!.sort()
     } else {
@@ -109,8 +118,12 @@ func dictToBookmark(dict: NSDictionary) -> Bookmark {
         description = nil
     }
 
-    return Bookmark(url: url, title: title, description: description,
-                    date_added: date_added, tags: tags)
+    return Bookmark(uuid: uuid,
+                    url: url,
+                    title: title,
+                    description: description,
+                    date_added: date_added,
+                    tags: tags)
 }
 
 
@@ -165,8 +178,30 @@ server.get("/add") { req, res, cb in
 }
 
 server.post("/add", Middleware.bodyParser(), { req, res, cb in
-    print("entered post")
 
+    // Tags are entered space-separated by the user, so turn them into
+    // a list of strings.
+    let tags: [String]?
+    if let tagString = req.body["tags"] {
+        tags = tagString.characters.split{$0 == " "}.map(String.init)
+    } else {
+        tags = nil
+    }
+
+    let description = String(req.body["description"]!)
+
+    // Create the new bookmark and add it to the list
+    let new_bookmark = Bookmark(uuid: NSUUID().UUIDString,
+                                url: String(req.body["url"]!),
+                                title: String(req.body["title"]!),
+                                description: description,
+                                date_added: NSDate(),
+                                tags: tags)
+    var bookmarks = getBookmarks()
+    bookmarks.append(new_bookmark)
+    setBookmarks(bookmarks)
+
+    // Send a bit of JS to close the 'New bookmark' window
     res.bodyString = "<script>window.close();</script>"
     res.headers["Content-Type"] = "text/html"
 
