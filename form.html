@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <title>Add a bookmark</title>
+
+    <!-- Mobile resizing magic -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- Bootstrap stylesheet -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script src="http://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <link rel="stylesheet" href="/style.css">
+
+    <script>
+      function checkMandatoryFields() {
+        title = document.getElementById("swiftmarksTitle").value;
+        if (title == "") {
+          alert("Bookmarks must have a title.");
+          return false;
+        }
+
+        url = document.getElementById("swiftmarksURL").value;
+        if (url == "") {
+          alert("Bookmarks must have a URL.");
+          return false;
+        }
+        return true;
+      }
+    </script>
+
+  </head>
+  <body>
+    <nav class="nav navbar-default">
+      <div class="container">
+        <span class="navbar-brand" href="#">Add a bookmark</span>
+        </form>
+      </div>
+    </nav>
+    <div class="container" style="padding-top: 10px;">
+      <form action="#" method="post" onsubmit="return checkMandatoryFields();">
+        <div class="form-group">
+          <label for="swiftmarksTitle">title</label>
+          <input type="text" class="form-control" id="swiftmarksTitle" placeholder="title" name="title">
+        </div>
+        <div class="form-group">
+          <label for="swiftmarksURL">url</label>
+          <input type="url" class="form-control" id="swiftmarksURL" placeholder="http://example.org" name="url">
+        </div>
+        <div class="form-group">
+          <label for="swiftmarksDescription">description</label>
+          <textarea class="form-control" rows="3" id="swiftmarksDescription" name="description"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="swiftmarksTags">title</label>
+          <input type="text" class="form-control" id="swiftmarksTags" placeholder="tags go here" name="tags">
+        </div>
+        <button class="btn btn-default" type="submit">Submit</button>
+      </form>
+    </div>
+  </body>
+</html>

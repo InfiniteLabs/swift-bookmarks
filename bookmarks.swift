@@ -51,6 +51,14 @@ struct Bookmark {
 
         return metadata
     }
+
+    func has_tag(tag: String) -> Bool {
+        if tags == nil {
+            return false
+        } else {
+            return tags!.contains(tag)
+        }
+    }
 }
 
 
@@ -121,22 +129,49 @@ func HTMLforListOfBookmarks(bookmarks: [Bookmark], title: String) -> String {
 }
 
 
-let server = Taylor.Server()
+func HTMLFormForNewBookmark() -> String {
+    do {
+        let template = try Template(path: "./form.html")
+        return try template.render()
+    } catch {
+        // This isn't great error handling -- we should really send
+        // an error 500 status code.  Also, this error message is
+        // unhelpfully generic.  Improve this!
+        print("Error rendering the page.")
+        return "Server error."
+    }
+}
 
-server.get("/") { req, res in
+
+let server = Taylor.Server()
+server.addHandler(Middleware.requestLogger { print($0) })
+
+server.get("/") { req, res, cb in
     res.bodyString = HTMLforListOfBookmarks(getBookmarks(), title: "")
     res.headers["Content-Type"] = "text/html"
-    return .Send
-}
-    res.headers["Content-Type"] = "text/html"
-    return .Send
+    return cb(.Send(req, res))
 }
 
-server.get("/style.css") { req, res in
+server.get("/add") { req, res, cb in
+    res.bodyString = HTMLFormForNewBookmark()
+    res.headers["Content-Type"] = "text/html"
+    return cb(.Send(req, res))
+}
+
+server.post("/add", Middleware.bodyParser(), { req, res, cb in
+    print("entered post")
+
+    res.bodyString = "<script>window.close();</script>"
+    res.headers["Content-Type"] = "text/html"
+
+    return cb(.Send(req, res))
+})
+
+server.get("/style.css") { req, res, cb in
     res.bodyString = try! String(contentsOfURL: NSURL(fileURLWithPath: "style.css"),
                                  encoding: NSUTF8StringEncoding)
     res.headers["Content-Type"] = "text/css"
-    return .Send
+    return cb(.Send(req, res))
 }
 
 
