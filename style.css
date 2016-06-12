@@ -8,13 +8,32 @@ ul li {
 }
 
 .title {
+    margin-bottom: 4px;
+}
+
+.title a {
     font-weight: bold;
     color: #D94C1C;
 }
 
+.title a:hover {
+    color: #832d11;
+}
+
+.tags a, .description {
+    font-size: 85%;
+}
+
+.description {
+    margin-bottom: 0px;
+}
+
+.tags {
+    margin-top: 0px;
+}
+
 .tags a {
     color: #999;
-    font-size: 85%;
     padding-right: 8px;
 }
 
