@@ -46,6 +46,28 @@ struct Bookmark {
     var date_added: NSDate
     var tags: [String]?
 
+    func toHTML() -> NSDictionary {
+        let encodedResult = NSMutableDictionary(dictionary: self.encode())
+
+        if let description = encodedResult["description"] {
+            let lines = Array(String(description).characters.split {$0 == "\n" || $0 == "\r"})
+            var htmlDescription = ""
+            for line in lines {
+                if line[line.startIndex] == ">" {
+                    let lineStr = String(line[line.startIndex.advancedBy(1)..<line.startIndex.advancedBy(line.count)])
+                    htmlDescription += "<blockquote>\(lineStr)</blockquote>"
+                } else {
+                    let lineStr = String(line)
+                    htmlDescription += "<p>\(lineStr)</p>"
+                }
+            }
+            encodedResult["description"] = htmlDescription
+        }
+        // print(encodedResult)
+
+        return NSDictionary(dictionary: encodedResult)
+    }
+
     func encode() -> NSDictionary {
         let metadata = NSMutableDictionary()
 
@@ -136,7 +158,7 @@ func dictToBookmark(dict: NSDictionary) -> Bookmark {
 // them as a list.
 func HTMLforListOfBookmarks(bookmarks: [Bookmark], title: String) -> String {
     let data = [
-        "bookmarks": bookmarks.map {$0.encode()},
+        "bookmarks": bookmarks.map {$0.toHTML()},
         "title": title,
     ]
 
@@ -186,7 +208,16 @@ server.get("/tag/:name") { req, res, cb in
     return cb(.Send(req, res))
 }
 
+server.get("/add") { req, res, cb in
+    res.bodyString = HTMLFormForNewBookmark()
+    res.headers["Content-Type"] = "text/html"
+    return cb(.Send(req, res))
+}
+
+
 server.post("/add", Middleware.bodyParser(), { req, res, cb in
+
+    print(req.body)
 
     // Tags are entered space-separated by the user, so turn them into
     // a list of strings.
@@ -200,12 +231,14 @@ server.post("/add", Middleware.bodyParser(), { req, res, cb in
     let description = String(req.body["description"]!)
 
     // Create the new bookmark and add it to the list
+    print(req.body)
     let new_bookmark = Bookmark(uuid: NSUUID().UUIDString,
                                 url: String(req.body["url"]!),
                                 title: String(req.body["title"]!),
                                 description: description,
                                 date_added: NSDate(),
                                 tags: tags)
+    print("Adding bookmark \(new_bookmark)")
     var bookmarks = getBookmarks()
     bookmarks.append(new_bookmark)
     setBookmarks(bookmarks)

@@ -35,13 +35,8 @@
         <li>
           <p class="title"><a href="{{ url }}">{{ title }}</a></p>
 
-          <p class="description">{{ description }}</p>
-
-          <p class="tags">
-          {{#tags}}
-          <a href="/tag/{{ . }}">{{ . }}</a>
-          {{/tags}}
-          </p>
+          <div class="description">{{{ description }}}</div>
+          <p class="tags">{{#tags}}<a href="/tag/{{ . }}">{{ . }}</a>{{/tags}}</p>
         </li>
       {{/bookmarks}}
       </ul>

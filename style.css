@@ -80,3 +80,12 @@ body {
 .navbar-default .navbar-form {
     border: none;
 }
+
+blockquote {
+    font-size: 95%;
+    border-left: none;
+    padding-left: 15px;
+    margin-bottom: 0px;
+    padding-top: 2px;
+    color: #06034e;
+}
