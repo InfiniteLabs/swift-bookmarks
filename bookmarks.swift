@@ -12,9 +12,15 @@ import Taylor
 let PLISTPATH = "./bookmarks.plist"
 
 
+func <(lhs: NSDate, rhs: NSDate) -> Bool {
+    return (lhs.compare(rhs) == NSComparisonResult.OrderedDescending)
+}
+
+
 func getBookmarks() -> [Bookmark] {
     if let retval = NSArray(contentsOfFile: PLISTPATH) {
-        return retval.map { dictToBookmark($0 as! NSDictionary) }
+        let bookmarks = retval.map { dictToBookmark($0 as! NSDictionary) }
+        return bookmarks.sort {$0.date_added < $1.date_added}
     } else {
         return [Bookmark]()
     }
