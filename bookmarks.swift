@@ -150,7 +150,7 @@ func dictToBookmark(dict: NSDictionary) -> Bookmark {
                     title: title,
                     description: description,
                     date_added: date_added,
-                    tags: tags)
+                    tags: (tags ?? [String]()).sort())
 }
 
 
