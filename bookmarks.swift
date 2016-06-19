@@ -9,7 +9,14 @@ import Foundation
 import Mustache
 import Taylor
 
-let PLISTPATH = "./bookmarks.plist"
+let PLISTPATH: String
+if Process.arguments.count > 1 {
+    PLISTPATH = Process.arguments[1]
+} else {
+    PLISTPATH = "./bookmarks.plist"
+}
+
+print("Using plist at \(PLISTPATH)")
 
 
 func <(lhs: NSDate, rhs: NSDate) -> Bool {
