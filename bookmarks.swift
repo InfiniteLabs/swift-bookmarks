@@ -19,7 +19,7 @@ if Process.arguments.count > 1 {
 print("Using plist at \(PLISTPATH)")
 
 
-func <(lhs: NSDate, rhs: NSDate) -> Bool {
+func >(lhs: NSDate, rhs: NSDate) -> Bool {
     return (lhs.compare(rhs) == NSComparisonResult.OrderedDescending)
 }
 
@@ -27,7 +27,7 @@ func <(lhs: NSDate, rhs: NSDate) -> Bool {
 func getBookmarks() -> [Bookmark] {
     if let retval = NSArray(contentsOfFile: PLISTPATH) {
         let bookmarks = retval.map { dictToBookmark($0 as! NSDictionary) }
-        return bookmarks.sort {$0.date_added < $1.date_added}
+        return bookmarks.sort {$0.date_added > $1.date_added}
     } else {
         return [Bookmark]()
     }
@@ -70,7 +70,6 @@ struct Bookmark {
             }
             encodedResult["description"] = htmlDescription
         }
-        // print(encodedResult)
 
         return NSDictionary(dictionary: encodedResult)
     }
@@ -163,10 +162,11 @@ func dictToBookmark(dict: NSDictionary) -> Bookmark {
 
 // Given a list of bookmarks, return the HTML required to render
 // them as a list.
-func HTMLforListOfBookmarks(bookmarks: [Bookmark], title: String) -> String {
+func HTMLforListOfBookmarks(bookmarks: [Bookmark], title: String, mobile_title: String) -> String {
     let data = [
         "bookmarks": bookmarks.map {$0.toHTML()},
         "title": title,
+        "mobile_title": mobile_title
     ]
 
     do {
@@ -199,8 +199,10 @@ func HTMLFormForNewBookmark() -> String {
 let server = Taylor.Server()
 server.addHandler(Middleware.requestLogger { print($0) })
 
+var allbookmarks = getBookmarks()
+
 server.get("/") { req, res, cb in
-    res.bodyString = HTMLforListOfBookmarks(getBookmarks(), title: "")
+    res.bodyString = HTMLforListOfBookmarks(allbookmarks, title: "", mobile_title: "")
     res.headers["Content-Type"] = "text/html"
     return cb(.Send(req, res))
 }
@@ -209,7 +211,8 @@ server.get("/tag/:name") { req, res, cb in
     let tag = req.parameters["name"]!
     res.bodyString = HTMLforListOfBookmarks(
         bookmarksByTag(tag),
-        title: "Tagged with &ldquo;\(tag)&rdquo;"
+        title: "Tagged with &ldquo;\(tag)&rdquo;",
+        mobile_title: "Tag: &ldquo;\(tag)&rdquo;"
     )
     res.headers["Content-Type"] = "text/html"
     return cb(.Send(req, res))
@@ -222,9 +225,8 @@ server.get("/add") { req, res, cb in
 }
 
 
-server.post("/add", Middleware.bodyParser(), { req, res, cb in
 
-    print(req.body)
+server.post("/add", Middleware.bodyParser(), { req, res, cb in
 
     // Tags are entered space-separated by the user, so turn them into
     // a list of strings.
@@ -238,7 +240,6 @@ server.post("/add", Middleware.bodyParser(), { req, res, cb in
     let description = String(req.body["description"]!)
 
     // Create the new bookmark and add it to the list
-    print(req.body)
     let new_bookmark = Bookmark(uuid: NSUUID().UUIDString,
                                 url: String(req.body["url"]!),
                                 title: String(req.body["title"]!),
@@ -246,9 +247,9 @@ server.post("/add", Middleware.bodyParser(), { req, res, cb in
                                 date_added: NSDate(),
                                 tags: tags)
     print("Adding bookmark \(new_bookmark)")
-    var bookmarks = getBookmarks()
-    bookmarks.append(new_bookmark)
-    setBookmarks(bookmarks)
+    allbookmarks.append(new_bookmark)
+    allbookmarks = allbookmarks.sort {$0.date_added > $1.date_added}
+    setBookmarks(allbookmarks)
 
     // Send a bit of JS to close the 'New bookmark' window
     res.bodyString = "<script>window.close();</script>"
@@ -257,10 +258,14 @@ server.post("/add", Middleware.bodyParser(), { req, res, cb in
     return cb(.Send(req, res))
 })
 
+// Cached for performance
+let cssString = try! String(contentsOfURL: NSURL(fileURLWithPath: "style.css"),
+                            encoding: NSUTF8StringEncoding)
+
 server.get("/style.css") { req, res, cb in
-    res.bodyString = try! String(contentsOfURL: NSURL(fileURLWithPath: "style.css"),
-                                 encoding: NSUTF8StringEncoding)
+    res.bodyString = cssString
     res.headers["Content-Type"] = "text/css"
+    res.headers["Cache-Control"] = "max-age=3153600"
     return cb(.Send(req, res))
 }
 
