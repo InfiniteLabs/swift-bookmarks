@@ -8,7 +8,7 @@ ul li {
 }
 
 .title {
-    margin-bottom: 4px;
+    margin-bottom: 8px;
 }
 
 .title a {
@@ -29,7 +29,7 @@ ul li {
 }
 
 .tags {
-    margin-top: 0px;
+    margin-top: -6px;
 }
 
 .tags a {
@@ -62,6 +62,18 @@ ul li {
     }
 }
 
+.mobile_title {
+    display: none;
+}
+@media screen and (max-width: 500px) {
+    .mobile_title {
+        display: inline-block;
+    }
+    .subtitle {
+        display: none;
+    }
+}
+
 body {
     font-size: 150%;
 }
@@ -87,5 +99,5 @@ blockquote {
     padding-left: 15px;
     margin-bottom: 0px;
     padding-top: 2px;
-    color: #06034e;
+    color: #070462;
 }
