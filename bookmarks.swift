@@ -259,9 +259,9 @@ server.post("/add", Middleware.bodyParser(), { req, res, cb in
 })
 
 // Cached for performance
-let cssString = try! String(contentsOfURL: NSURL(fileURLWithPath: "style.css"),
+let cssString = try! String(contentsOfURL: NSURL(fileURLWithPath: "static/style.css"),
                             encoding: NSUTF8StringEncoding)
-let jsString = try! String(contentsOfURL: NSURL(fileURLWithPath: "he.js"),
+let jsString = try! String(contentsOfURL: NSURL(fileURLWithPath: "static/he.js"),
                            encoding: NSUTF8StringEncoding)
 
 server.get("/style.css") { req, res, cb in
