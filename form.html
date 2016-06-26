@@ -14,12 +14,16 @@
     <link rel="stylesheet" href="/style.css">
 
     <script>
+      // Given the ID of a form field, replace any non-ASCII characters
+      // in the field value with HTML entities.
       function replaceFieldWithHTMLEntities(field_id) {
         old_value = document.getElementById(field_id).value;
         new_value = he.encode(old_value, {'useNamedReferences': true});
         document.getElementById(field_id).value = new_value;
       }
 
+      // Check that all the mandatory fields for the bookmark have
+      // been filled in.
       function checkMandatoryFields() {
         title = document.getElementById("swiftmarksTitle").value;
         if (title == "") {
@@ -73,8 +77,23 @@
           <label for="swiftmarksTags">title</label>
           <input type="text" class="form-control" id="swiftmarksTags" placeholder="tags go here" name="tags">
         </div>
-        <button class="btn btn-default" type="submit">Submit</button>
+        <button id="submitButton"
+                class="btn btn-default"
+                type="submit" disabled>Submit</button>
       </form>
     </div>
+
+    <script>
+      $('form :input').change(function() {
+        title = document.getElementById("swiftmarksTitle").value;
+        url = document.getElementById("swiftmarksURL").value;
+        if ((title == "") || (url == "")) {
+          disabled = true;
+        } else {
+          disabled = false;
+        }
+        $("#submitButton").prop('disabled', disabled);
+      })
+    </script>
   </body>
 </html>

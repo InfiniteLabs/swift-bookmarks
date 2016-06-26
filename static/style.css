@@ -101,3 +101,12 @@ blockquote {
     padding-top: 2px;
     color: #070462;
 }
+
+#submitButton:enabled {
+  border: 2px solid #D94C1C;
+  color: #D94C1C;
+}
+
+#submitButton:disabled {
+  margin: 1px;
+}
