@@ -182,10 +182,16 @@ func HTMLforListOfBookmarks(bookmarks: [Bookmark], title: String, mobile_title: 
 }
 
 
-func HTMLFormForNewBookmark() -> String {
+func HTMLFormForNewBookmark(arguments: [String: String]) -> String {
     do {
+        let data = [
+            "title":       arguments["title"] ?? "",
+            "url":         arguments["url"] ?? "",
+            "description": arguments["description"] ?? "",
+            "tags":        arguments["tags"] ?? "",
+        ]
         let template = try Template(path: "./form.html")
-        return try template.render()
+        return try template.render(Box(data))
     } catch {
         // This isn't great error handling -- we should really send
         // an error 500 status code.  Also, this error message is
@@ -219,7 +225,7 @@ server.get("/tag/:name") { req, res, cb in
 }
 
 server.get("/add") { req, res, cb in
-    res.bodyString = HTMLFormForNewBookmark()
+    res.bodyString = HTMLFormForNewBookmark(req.arguments)
     res.headers["Content-Type"] = "text/html"
     return cb(.Send(req, res))
 }

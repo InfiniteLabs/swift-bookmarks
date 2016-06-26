@@ -49,6 +49,17 @@
 
         return true;
       }
+
+      function checkIfSubmitShouldBeEnabled() {
+        title = document.getElementById("swiftmarksTitle").value;
+        url = document.getElementById("swiftmarksURL").value;
+        if ((title == "") || (url == "")) {
+          disabled = true;
+        } else {
+          disabled = false;
+        }
+        $("#submitButton").prop('disabled', disabled);
+      }
     </script>
 
   </head>
@@ -63,19 +74,37 @@
       <form action="#" method="post" onsubmit="return checkMandatoryFields();">
         <div class="form-group">
           <label for="swiftmarksTitle">title</label>
-          <input type="text" class="form-control" id="swiftmarksTitle" placeholder="title" name="title">
+          <input type="text"
+                 class="form-control"
+                 id="swiftmarksTitle"
+                 placeholder="title"
+                 name="title"
+                 value="{{{ title }}}">
         </div>
         <div class="form-group">
           <label for="swiftmarksURL">url</label>
-          <input type="url" class="form-control" id="swiftmarksURL" placeholder="http://example.org" name="url">
+          <input type="url"
+                 class="form-control"
+                 id="swiftmarksURL"
+                 placeholder="http://example.org"
+                 name="url"
+                 value="{{{ url }}}">
         </div>
         <div class="form-group">
           <label for="swiftmarksDescription">description</label>
-          <textarea class="form-control" rows="3" id="swiftmarksDescription" name="description"></textarea>
+          <textarea class="form-control"
+                    rows="3"
+                    id="swiftmarksDescription"
+                    name="description">{{{ description }}}</textarea>
         </div>
         <div class="form-group">
           <label for="swiftmarksTags">title</label>
-          <input type="text" class="form-control" id="swiftmarksTags" placeholder="tags go here" name="tags">
+          <input type="text"
+                 class="form-control"
+                 id="swiftmarksTags"
+                 placeholder="tags go here"
+                 name="tags"
+                 value="{{{ tags }}}">
         </div>
         <button id="submitButton"
                 class="btn btn-default"
@@ -84,16 +113,8 @@
     </div>
 
     <script>
-      $('form :input').change(function() {
-        title = document.getElementById("swiftmarksTitle").value;
-        url = document.getElementById("swiftmarksURL").value;
-        if ((title == "") || (url == "")) {
-          disabled = true;
-        } else {
-          disabled = false;
-        }
-        $("#submitButton").prop('disabled', disabled);
-      })
+      $('form :input').change(checkIfSubmitShouldBeEnabled);
+      $(document).ready(checkIfSubmitShouldBeEnabled);
     </script>
   </body>
 </html>
