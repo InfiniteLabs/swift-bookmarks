@@ -10,9 +10,16 @@
     <!-- Bootstrap stylesheet -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <script src="http://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script src="/he.js"></script>
     <link rel="stylesheet" href="/style.css">
 
     <script>
+      function replaceFieldWithHTMLEntities(field_id) {
+        old_value = document.getElementById(field_id).value;
+        new_value = he.encode(old_value, {'useNamedReferences': true});
+        document.getElementById(field_id).value = new_value;
+      }
+
       function checkMandatoryFields() {
         title = document.getElementById("swiftmarksTitle").value;
         if (title == "") {
@@ -26,30 +33,17 @@
           return false;
         }
 
-        // Check that all the fields are ASCII only.  This is to work around
+        // Check that all the fields are ASCII only, and coerce them to
+        // ASCII with HTML entities if not.  This is to work around
         // a server-side limitation that causes it to crash if it gets
         // non-ASCII data in POST requests (yeah, it's rubbish).
-        if (!isASCII(title)) {
-          alert("Bookmark title must be ASCII only.")
-          return false;
-        }
-        if (!isASCII(url)) {
-          alert("Bookmark URL must be ASCII only.")
-          return false;
-        }
-        if (!isASCII(document.getElementById("swiftmarksDescription").value)) {
-          alert("Bookmark description must be ASCII only.")
-          return false;
-        }
-        if (!isASCII(document.getElementById("swiftmarksTags").value)) {
-          alert("Bookmark tags must be ASCII only.")
-          return false;
+        fields = ["Title", "URL", "Description", "Tags"];
+        for (var i = 0; i < fields.length; i++) {
+          fieldName = "swiftmarks" + fields[i];
+          replaceFieldWithHTMLEntities(fieldName);
         }
 
         return true;
-      }
-      function isASCII(str) {
-          return /^[\x00-\x7F]*$/.test(str);
       }
     </script>
 

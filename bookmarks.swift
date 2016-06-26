@@ -261,10 +261,19 @@ server.post("/add", Middleware.bodyParser(), { req, res, cb in
 // Cached for performance
 let cssString = try! String(contentsOfURL: NSURL(fileURLWithPath: "style.css"),
                             encoding: NSUTF8StringEncoding)
+let jsString = try! String(contentsOfURL: NSURL(fileURLWithPath: "he.js"),
+                           encoding: NSUTF8StringEncoding)
 
 server.get("/style.css") { req, res, cb in
     res.bodyString = cssString
     res.headers["Content-Type"] = "text/css"
+    res.headers["Cache-Control"] = "max-age=3153600"
+    return cb(.Send(req, res))
+}
+
+server.get("/he.js") { req, res, cb in
+    res.bodyString = jsString
+    res.headers["Content-Type"] = "text/javascript"
     res.headers["Cache-Control"] = "max-age=3153600"
     return cb(.Send(req, res))
 }
