@@ -110,3 +110,7 @@ blockquote {
 #submitButton:disabled {
   margin: 1px;
 }
+
+.ui-widget {
+  font-size: 0.9em !important;
+}

@@ -10,6 +10,8 @@
     <!-- Bootstrap stylesheet -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <script src="http://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/flick/jquery-ui.css">
     <script src="/he.js"></script>
     <link rel="stylesheet" href="/style.css">
 
@@ -113,6 +115,55 @@
     </div>
 
     <script>
+      // This code is used to provide the autocomplete functionality
+      // on the tag field.
+      $(function() {
+        function split(val) {
+          return val.split( /,\s*/ );
+        }
+        function extractLast(term) {
+          return split(term).pop();
+        }
+
+        // This function comes straight from the jQuery UI documentation:
+        // http://jqueryui.com/autocomplete/#multiple
+        function multipleAutocomplete(formId, availableValues) {
+          $( formId )
+            // don't navigate away from the field on tab when selecting an item
+            .bind( "keydown", function( event ) {
+              if ( event.keyCode === $.ui.keyCode.TAB &&
+                  $( this ).autocomplete( "instance" ).menu.active ) {
+                event.preventDefault();
+              }
+            })
+            .autocomplete({
+              minLength: 0,
+              source: function( request, response ) {
+                // delegate back to autocomplete, but extract the last term
+                response( $.ui.autocomplete.filter(
+                  availableValues, extractLast( request.term ) ) );
+              },
+              focus: function() {
+                // prevent value inserted on focus
+                return false;
+              },
+              select: function( event, ui ) {
+                var terms = split( this.value );
+                // remove the current input
+                terms.pop();
+                // add the selected item
+                terms.push( ui.item.value );
+                // add placeholder to get the comma-and-space at the end
+                terms.push( "" );
+                this.value = terms.join( " " );
+                return false;
+              }
+            });
+        }
+
+        multipleAutocomplete("#swiftmarksTags", {{{ alltags }}});
+      });
+
       $('form :input').change(checkIfSubmitShouldBeEnabled);
       $(document).ready(checkIfSubmitShouldBeEnabled);
     </script>

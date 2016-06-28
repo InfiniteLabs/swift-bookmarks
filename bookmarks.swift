@@ -45,6 +45,32 @@ func bookmarksByTag(tag: String) -> [Bookmark] {
 }
 
 
+// Get a list of all tags, counted by frequency
+func tagsByFrequency(bookmarks: [Bookmark]) -> [String: Int] {
+    var tagTally = [String: Int]()
+    for bookmark in bookmarks {
+        if let tags = bookmark.tags {
+            for tag in tags {
+                let count = tagTally[tag] ?? 0
+                tagTally[tag] = count + 1
+            }
+        }
+    }
+    return tagTally
+}
+
+
+// Get a JSON list of all tags, counted by frequency
+func jsonTagsByFrequency(bookmarks: [Bookmark]) -> String {
+    let tagsTally = tagsByFrequency(bookmarks)
+    let tagNames = Array(tagsTally.keys).sort { tagsTally[$0] > tagsTally[$1] }
+    let jsonData = try! NSJSONSerialization.dataWithJSONObject(
+        tagNames,
+        options: [])
+    return String(NSString(data: jsonData, encoding: NSASCIIStringEncoding)!)
+}
+
+
 struct Bookmark {
     var uuid: String
     var url: String
@@ -189,6 +215,7 @@ func HTMLFormForNewBookmark(arguments: [String: String]) -> String {
             "url":         arguments["url"] ?? "",
             "description": arguments["description"] ?? "",
             "tags":        arguments["tags"] ?? "",
+            "alltags":     jsonTagsByFrequency(getBookmarks()),
         ]
         let template = try Template(path: "./form.html")
         return try template.render(Box(data))
